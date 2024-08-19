@@ -1,0 +1,136 @@
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+
+public class TaskTracker {
+
+    // List to store multiple Task objects
+    static ArrayList<Task> tasks = new ArrayList<>();
+
+    public static void main(String[] args) {
+
+        if (args.length == 0) {
+            System.out.println("No command provided.");
+            return;
+        }
+
+        String command = args[0];
+
+        // Command to Add a Task
+        switch (command) {
+            case "Add" -> {
+                if (args.length != 4) {
+                    System.out.println("Invalid arguments for 'Add' command. Usage: Add [title] [status] [description]");
+                    return;
+                }
+                String title = args[1];
+                String status = args[2];
+                String description = args[3].replace("_", " "); // Replacing '_' with spaces
+                Task newTask = new Task(title, description, status);
+                tasks.add(newTask); // Add the new task to the list
+                System.out.println("Task added successfully.");
+                System.out.println(newTask.info());
+            }
+            case "Update" -> {
+                if (tasks.isEmpty()) {
+                    System.out.println("No tasks exist. Please add a task first.");
+                    return;
+                }
+                if (args.length != 4) {
+                    System.out.println("Invalid arguments for 'Update' command. Usage: Update [taskIndex] [field] [new_value]");
+                    return;
+                }
+                int taskIndex;
+                try {
+                    taskIndex = Integer.parseInt(args[1]);
+                } catch (NumberFormatException e) {
+                    System.out.println("Task index must be an integer.");
+                    return;
+                }
+                if (taskIndex < 0 || taskIndex >= tasks.size()) {
+                    System.out.println("Invalid task index. Please provide a valid index.");
+                    return;
+                }
+                Task taskToUpdate = tasks.get(taskIndex);
+                String updateField = args[2];
+                String newValue = args[3].replace("_", " "); // Replacing '_' with spaces
+                switch (updateField) {
+                    case "Title" -> {
+                        taskToUpdate.settitle(newValue);
+                        System.out.println("Title updated successfully.");
+                    }
+                    case "Status" -> {
+                        taskToUpdate.setstatus(newValue);
+                        System.out.println("Status updated successfully.");
+                    }
+                    case "Description" -> {
+                        taskToUpdate.setdescription(newValue);
+                        System.out.println("Description updated successfully.");
+                    }
+                    default ->
+                        System.out.println("Invalid field to update. Valid fields are: Title, Status, Description.");
+                }
+                System.out.println(taskToUpdate.info());
+            }
+            case "List" -> {
+                if (tasks.isEmpty()) {
+                    System.out.println("No tasks available.");
+                } else {
+                    System.out.println("Task List:");
+                    for (int i = 0; i < tasks.size(); i++) {
+                        System.out.println("Task " + i + ":");
+                        System.out.println(tasks.get(i).info());
+                        System.out.println("----------------------");
+                    }
+                }
+            }
+            default ->
+                System.out.println("Invalid command. Valid commands are: Add, Update, List.");
+        }
+    }
+}
+
+class Task {
+
+    LocalDateTime now = LocalDateTime.now();
+
+    private String title;
+    private String description;
+    private String status;
+
+    Task(String title, String description, String status) {
+        this.title = title;
+        this.description = description;
+        this.status = status;
+    }
+
+    // Getters and setters
+    public String gettitle() {
+        return title;
+    }
+
+    public void settitle(String title) {
+        this.title = title;
+    }
+
+    public String getdescription() {
+        return description;
+    }
+
+    public void setdescription(String description) {
+        this.description = description;
+    }
+
+    public String getstatus() {
+        return status;
+    }
+
+    public void setstatus(String status) {
+        this.status = status;
+    }
+
+    public String info() {
+        return "Title: " + title + " (" + status + ") "
+                + "\nDescription: " + description
+                + "\nCreated on: " + now;
+    }
+}
